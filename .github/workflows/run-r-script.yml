@@ -1,1 +1,37 @@
+name: Evaluate Student File
 
+on:
+  push:
+    branches:
+      - main  # Adjust to relevant branch if needed
+    paths:
+      - 'Assignment1_???????.xlsx'  # Match files with the specified naming pattern
+
+jobs:
+  run-r-script:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out the repository
+      uses: actions/checkout@v3
+
+    - name: Set up R
+      uses: r-lib/actions/setup-r@v2
+      with:
+        r-version: 'latest'
+
+    - name: Install required R packages
+      run: |
+        Rscript -e 'if (!requireNamespace("pacman", quietly = TRUE)) install.packages("pacman")'
+        Rscript -e 'pacman::p_load(hunspell, readxl, writexl, stringr, influential, igraph, lsa)'
+
+    - name: Run the R script
+      run: |
+        Rscript CIS3750_A1_Evaluate_Student_File.R
+
+    - name: Upload output files
+      uses: actions/upload-artifact@v3
+      with:
+        name: Student-File-Results
+        path: |
+          /Users/dangillis/Desktop/CIS3750 A1/Results/StudentResults/*.txt  # Adjust path if needed
